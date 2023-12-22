@@ -1,0 +1,14 @@
+﻿@page "/register"
+
+<AuthorizeView Roles="User">
+    <Authorized>
+        Deja connecté
+    </Authorized>
+    <NotAuthorized>
+        Page d'inscription
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}

@@ -16,7 +16,7 @@
 
     private async void HandleLogin()
     {
-        var user = loginService.AuthenticateUser(loginModel.Username, loginModel.Password);
+        var user = loginService.AuthenticateUser(loginModel.Username, loginModel.Password).Result;
         if (user != null)
         {
             var userClaim = await ((CustomAuthenticationStateProvider)authStateProvider).MarkUserAsAuthenticated(user);
