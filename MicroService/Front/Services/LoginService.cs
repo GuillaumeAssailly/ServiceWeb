@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Security.Claims;
 
 
@@ -14,11 +15,12 @@ namespace Front.Services
         public LoginService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new System.Uri("http://localhost:5000");
+
         }
 
         public async Task<UserDTO> AuthenticateUser(string username, string password)
         {
-            _httpClient.BaseAddress = new System.Uri("http://localhost:5000");
 
             UserLogin user = new UserLogin()
             {
@@ -26,9 +28,9 @@ namespace Front.Services
                 Pass = password
             };
          
-            var response = await _httpClient.PostAsJsonAsync<UserLogin>("/api/User/login",user) ;
-
-            if(response.StatusCode==System.Net.HttpStatusCode.OK)
+            var response = await _httpClient.PostAsJsonAsync("/api/User/login",user).ConfigureAwait(false) ;
+            
+            if(response.StatusCode == HttpStatusCode.OK)
             {
                 var result = await response.Content.ReadFromJsonAsync<UserDTO>();
                 return result;

@@ -1,4 +1,5 @@
 ﻿@page "/register"
+@inject RegisterModel registerModel
 
 <AuthorizeView Roles="User">
     <Authorized>
@@ -6,9 +7,28 @@
     </Authorized>
     <NotAuthorized>
         Page d'inscription
+        <EditForm Model=@registerMode >
+            <InputText @bind-Value=registerModel.Username/>
+            <InputText/>
+            <InputText />
+        </EditForm>
+       <button>Register</button>  
+
+
     </NotAuthorized>
 </AuthorizeView>
 
-@code {
 
+
+
+@code {
+    RegisterModel registerModel = new RegisterModel();
+
+    private class RegisterModel
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string Email { get; set; } = "";
+
+    }
 }

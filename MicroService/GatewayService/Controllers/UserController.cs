@@ -19,7 +19,7 @@ namespace GatewayService.Controllers
 
         // api/User/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserLogin model)
+        public async Task<ActionResult<UserDTO>> Login(UserLogin model)
         {
             // Create an HttpClient instance using the factory
             using (var client = _httpClientFactory.CreateClient())
