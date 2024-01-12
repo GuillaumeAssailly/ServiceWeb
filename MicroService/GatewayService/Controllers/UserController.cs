@@ -48,6 +48,10 @@ namespace GatewayService.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(UserCreateModel model)
         {
+            if (!System.Text.RegularExpressions.Regex.IsMatch(model.Name, "^[a-zA-Z0-9]+$") || !System.Text.RegularExpressions.Regex.IsMatch(model.Password, "^[a-zA-Z0-9]+$"))
+            {
+                return BadRequest("Les credentials ne doivent contenir que des caractères alphanumériques.");
+            }
             // Create an HttpClient instance using the factory
             using (var client = _httpClientFactory.CreateClient())
             {
