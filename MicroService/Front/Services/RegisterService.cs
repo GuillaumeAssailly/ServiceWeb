@@ -18,25 +18,22 @@ namespace Front.Services
             _httpClient.BaseAddress = new System.Uri("http://localhost:5000");
         }
 
-        public async Task<UserDTO> RegisterUser(string username, string password)
+        public async Task<UserDTO> RegisterUser(string username, string password, string mail)
         {
 
             UserCreateModel user = new UserCreateModel()
             {
                 Name = username,
                 Password = password,
-                Email = ""
+                Email = mail
             };
-         
-            var response = await _httpClient.PostAsJsonAsync("/api/User/register",user) ;
+
+            var response = await _httpClient.PostAsJsonAsync("/api/User/register", user);
             
             if(response.StatusCode == HttpStatusCode.OK)
             {
-
-
                 var result = await response.Content.ReadFromJsonAsync<UserDTO>();
                 return result;
-
             }
             return null;
             

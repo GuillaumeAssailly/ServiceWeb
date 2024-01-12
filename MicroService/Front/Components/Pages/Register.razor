@@ -5,8 +5,9 @@
 
 
 <EditForm EditContext="@editContext" Model="@registerModel" OnValidSubmit="HandleRegister">
-    <InputText @bind-Value="registerModel.Username" />
-    <InputText @bind-Value="registerModel.Password" type="password" />
+    <InputText @bind-Value="registerModel.Username" placeholder="Nom d'utilisateur" />
+    <InputText @bind-Value="registerModel.Password" type="password" placeholder="Mot de passe" />
+    <InputText @bind-Value="registerModel.Mail" type="email" placeholder="Adresse mail" />
     <button type="submit">Register</button>
 </EditForm>
 
@@ -20,11 +21,12 @@
     {
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
+        public string Mail { get; set; } = "";
     }
 
     private async void HandleRegister()
     {
-        var user = await registerService.RegisterUser(registerModel.Username, registerModel.Password);
+        var user = await registerService.RegisterUser(registerModel.Username, registerModel.Password, registerModel.Mail);
         if (user != null)
         {
             var userClaim = await ((CustomAuthenticationStateProvider)authStateProvider).MarkUserAsAuthenticated(user);
