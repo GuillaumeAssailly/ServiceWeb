@@ -8,36 +8,37 @@ using System.Security.Claims;
 
 namespace Front.Services
 {
-    public class LoginService
+    public class RegisterService
     {
         private readonly HttpClient _httpClient;
 
-        public LoginService(HttpClient httpClient)
+        public RegisterService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new System.Uri("http://localhost:5000");
-
+            _httpClient.BaseAddress = new System.Uri("http://localhost:5001");
         }
 
-        public async Task<UserDTO> AuthenticateUser(string username, string password)
+        public async Task<UserDTO> RegisterUser(string username, string password)
         {
 
-            UserLogin user = new UserLogin()
+            UserCreateModel user = new UserCreateModel()
             {
                 Name = username,
-                Pass = password
+                Password = password,
+                Email = ""
             };
          
-            var response = await _httpClient.PostAsJsonAsync("/api/User/login",user).ConfigureAwait(false) ;
+            var response = await _httpClient.PostAsJsonAsync("/api/Users/register",user) ;
             
-            if(response.StatusCode == HttpStatusCode.OK)
+            if(response.StatusCode == HttpStatusCode.Created)
             {
                 var result = await response.Content.ReadFromJsonAsync<UserDTO>();
                 return result;
             }
-             return null;
+            return null;
             
         }
     }
-}
 
+
+}

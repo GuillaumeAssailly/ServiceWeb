@@ -14,4 +14,11 @@
         public required string Name { get; set; }
         public required string Pass { get; set; }
     }
+
+    public class UserCreateModel
+    {
+        public required string Password { get; set; }
+        public required string Name { get; set; }
+        public required string Email { get; set; }
+    }
 }

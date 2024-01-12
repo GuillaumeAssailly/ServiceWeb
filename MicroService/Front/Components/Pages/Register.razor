@@ -1,34 +1,30 @@
 ﻿@page "/register"
-@inject RegisterModel registerModel
-
-<AuthorizeView Roles="User">
-    <Authorized>
-        Deja connecté
-    </Authorized>
-    <NotAuthorized>
-        Page d'inscription
-        <EditForm Model=@registerMode >
-            <InputText @bind-Value=registerModel.Username/>
-            <InputText/>
-            <InputText />
-        </EditForm>
-       <button>Register</button>  
+@inject NavigationManager NavigationManager
+@inject RegisterService registerService
 
 
-    </NotAuthorized>
-</AuthorizeView>
-
+<EditForm EditContext="@editContext" Model="@registerModel" OnValidSubmit="HandleRegister">
+    <InputText @bind-Value="registerModel.Username" />
+    <InputText @bind-Value="registerModel.Password" type="password" />
+    <button type="submit">Register</button>
+</EditForm>
 
 
 
 @code {
-    RegisterModel registerModel = new RegisterModel();
-
+    private RegisterModel registerModel = new RegisterModel();
+    private EditContext? editContext;
     private class RegisterModel
     {
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
-        public string Email { get; set; } = "";
-
     }
+
+    private async void HandleRegister()
+    {
+        var user = await registerService.RegisterUser(registerModel.Username, registerModel.Password);
+        
+    }
+
+
 }
