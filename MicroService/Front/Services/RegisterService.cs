@@ -32,8 +32,11 @@ namespace Front.Services
             
             if(response.StatusCode == HttpStatusCode.OK)
             {
+
+
                 var result = await response.Content.ReadFromJsonAsync<UserDTO>();
                 return result;
+
             }
             return null;
             

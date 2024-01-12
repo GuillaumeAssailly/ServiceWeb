@@ -1,6 +1,7 @@
 ﻿@page "/register"
 @inject NavigationManager NavigationManager
 @inject RegisterService registerService
+@inject AuthenticationStateProvider authStateProvider
 
 
 <EditForm EditContext="@editContext" Model="@registerModel" OnValidSubmit="HandleRegister">
@@ -24,7 +25,16 @@
     private async void HandleRegister()
     {
         var user = await registerService.RegisterUser(registerModel.Username, registerModel.Password);
-        
+        if (user != null)
+        {
+            var userClaim = await ((CustomAuthenticationStateProvider)authStateProvider).MarkUserAsAuthenticated(user);
+
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            // Handle failed authentication
+        }
     }
 
 
