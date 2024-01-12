@@ -95,11 +95,25 @@ namespace UserService.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<User>> CreateUser(UserCreateModel userPayload)
         {
+            // Check if the email already exists
+            var existingMail = await _context.User.SingleOrDefaultAsync(u => u.Email == userPayload.Email);
+            var existingUser = await _context.User.SingleOrDefaultAsync(u => u.Email == userPayload.Name);
+            if (existingUser != null)
+            {
+                return Conflict("Utilisateur deja existant");
+            }
+            if (existingMail != null)
+            {
+                return Conflict("Email deja existant");
+            }
+
+            // If the email doesn't exist, proceed to create the new user
             var user = new User
             {
                 Email = userPayload.Email,
                 Name = userPayload.Name,
             };
+
             user.PasswordHash = _passwordHasher.HashPassword(user, userPayload.Password);
 
             _context.User.Add(user);
@@ -107,6 +121,9 @@ namespace UserService.Controllers
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
+
+
+
 
         // POST: api/Users/login
         [HttpPost("login")]

@@ -5,8 +5,8 @@
 @inject AuthenticationStateProvider authStateProvider
 
 <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
-    <InputText @bind-Value="loginModel.Username" />
-    <InputText @bind-Value="loginModel.Password" type="password" />
+    <InputText @bind-Value="loginModel.Username" placeholder ="Nom d'utilisateur" />
+    <InputText @bind-Value="loginModel.Password" type="password" placeholder="Mot de passe" />
     <button type="submit">Login</button>
 </EditForm>
 
