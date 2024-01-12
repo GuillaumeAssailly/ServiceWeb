@@ -68,7 +68,12 @@ namespace GatewayService.Controllers
                     var result = await response.Content.ReadFromJsonAsync<UserDTO>();
                     return Ok(result);
                 }
-                else
+                else if(response.StatusCode == HttpStatusCode.Conflict)
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return Conflict(errorMessage);
+                }
+                else 
                 {
                     return BadRequest("Register failed");
                 }

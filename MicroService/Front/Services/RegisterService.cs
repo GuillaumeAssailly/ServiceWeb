@@ -1,6 +1,7 @@
 ﻿using Front.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Security.Claims;
@@ -34,11 +35,31 @@ namespace Front.Services
             {
                 var result = await response.Content.ReadFromJsonAsync<UserDTO>();
                 return result;
+            } else if (response.StatusCode == HttpStatusCode.Conflict)
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+
+
+
+
+
+
+                if (errorMessage.Contains("Email"))
+                {
+                    Console.WriteLine("Email already exists");
+                }
+                else if (errorMessage.Contains("Username"))
+                {
+
+                    Console.WriteLine("Username already exists");
+                }
+                else
+                {
+                    Console.WriteLine("Registration failed due to conflict: " + errorMessage);
+                }
             }
             return null;
             
         }
     }
-
-
 }
