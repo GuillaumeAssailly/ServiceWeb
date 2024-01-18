@@ -32,24 +32,7 @@ builder.Services.AddScoped<ProtectedLocalStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<RegisterService>();
-builder.Services.AddAuthorization();
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "Osef";
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ClockSkew = TimeSpan.FromMinutes(600),
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudience = "localhost:5000",
-            ValidIssuer = "TodoProject",
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("YourSecretKeyLongLongLongLongEnough"))
-        };
-    });
+
 
 
 var app = builder.Build();

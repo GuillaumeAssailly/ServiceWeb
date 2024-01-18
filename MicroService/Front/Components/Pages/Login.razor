@@ -4,11 +4,11 @@
 @inject LoginService loginService
 @inject AuthenticationStateProvider authStateProvider
 
-<EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+
     <InputText @bind-Value="loginModel.Username" placeholder ="Nom d'utilisateur" />
     <InputText @bind-Value="loginModel.Password" type="password" placeholder="Mot de passe" />
-    <button type="submit">Login</button>
-</EditForm>
+    <button @onclick="HandleLogin">Login</button>
+
 
 @code {
     private LoginModel loginModel = new LoginModel();

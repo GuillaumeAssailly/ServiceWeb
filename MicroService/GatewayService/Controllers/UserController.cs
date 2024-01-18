@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using UserService.Entities;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 namespace GatewayService.Controllers
 {
@@ -18,8 +23,9 @@ namespace GatewayService.Controllers
         }
 
         // api/User/login
+        //public async Task<ActionResult<UserDTO>> Login(UserLogin model)
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> Login(UserLogin model)
+        public async Task<ActionResult<JWTAndUser>> Login(UserLogin model)
         {
             // Create an HttpClient instance using the factory
             using (var client = _httpClientFactory.CreateClient())
@@ -35,7 +41,9 @@ namespace GatewayService.Controllers
                 {
                     // You can deserialize the response content here if needed
                     var result = await response.Content.ReadFromJsonAsync<UserDTO>();
-                    return Ok(result);
+                    var jwt = GenerateJwtToken(result.Id);
+                    var userAndToken = new JWTAndUser { Token = jwt, User = result };
+                    return Ok(userAndToken);
                 }
                 else
                 {
@@ -45,8 +53,12 @@ namespace GatewayService.Controllers
         }
 
         // api/User/register
-        [HttpPost("register")]
+        /*
         public async Task<ActionResult<UserDTO>> Register(UserCreateModel model)
+        */
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserCreateModel model)
         {
             if (!System.Text.RegularExpressions.Regex.IsMatch(model.Name, "^[a-zA-Z0-9]+$") || !System.Text.RegularExpressions.Regex.IsMatch(model.Password, "^[a-zA-Z0-9]+$"))
             {
@@ -80,5 +92,37 @@ namespace GatewayService.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet("jwt")]
+        public ActionResult<string> Jwt()
+        {
+            var userName = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name)?.Value;
+
+            foreach (var claim in User.Claims)
+            {
+                Console.WriteLine(claim.Type + " " + claim.Value);
+            }
+            Console.WriteLine("jwt");
+            return Ok($"Hello, {userName}");
+        }
+        private string GenerateJwtToken(int userId)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim("UserId", userId.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSecretKeyLongLongLongLongEnough"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: "TodoProject",
+                audience: "localhost:5000",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(3000),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
 }
