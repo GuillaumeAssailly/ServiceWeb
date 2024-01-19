@@ -1,25 +1,114 @@
-﻿@page "/counter"
+﻿@page "/wiki/{id}"
 
-<AuthorizeView Roles="User">
-    <Authorized>
-        <PageTitle>Counter</PageTitle>
+@using System.Text.RegularExpressions
+@using System.Net
+@using System.Net.Http
+@using System.Security.Policy
+@using System.Text.Json
+@using System.Xml
+@using HtmlAgilityPack
+@using Microsoft.AspNetCore.Html
+@using Newtonsoft.Json
+@inject HttpClient _HttpClient
 
-        <h1>Counter</h1>
+<Navlink href='/weather/'>AIZEIAZEIAZYEZAYE</Navlink>
+<h3>Wikipedia Article Viewer</h3>
 
-        <p role="status">Current count: @currentCount</p>
 
-        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-    </Authorized>
-    <NotAuthorized>
-        Not Logged in
-    </NotAuthorized>
-</AuthorizeView>
+
+
+@if (!string.IsNullOrEmpty(htmlContent))
+{
+    <div>
+        <h4>HTML Content</h4>
+        <p>@rawHtml</p>
+    </div>
+}
+
+<button @onclick="FetchWikiArticle">Fetch Wikipedia Article</button>
 
 @code {
-    private int currentCount = 0;
+    [Parameter] public string Id { get; set; }
+    private string htmlContent = "";
+    private MarkupString rawHtml;
 
-    private void IncrementCount()
+
+    protected override async Task OnInitializedAsync()
     {
-        currentCount++;
+        await FetchWikiArticle();
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await FetchWikiArticle();
+    }
+
+    private async Task FetchWikiArticle()
+    {
+
+        string articleTitle = Id; // Specify the desired Wikipedia article title
+        string apiUrl = $"https://en.wikipedia.org/w/api.php?action=parse&format=json&page={Id}&prop=text&formatversion=2";
+
+        try
+        {
+            HttpResponseMessage response = await _HttpClient.GetAsync(apiUrl);
+            response.EnsureSuccessStatusCode();
+
+            string ApiRes = await response.Content.ReadAsStringAsync();
+            ApiRes = Regex.Replace(ApiRes, "<img[^>]*?>", "");
+            ApiRes = ApiRes.Replace("\\\"", "'");
+            ApiRes = ApiRes.Replace( "'\"", "\"");
+            //ApiRes = AddTargetBlank(ApiRes);
+            //ApiRes = ApiRes.Replace("<a", "<NavLink");
+            //ApiRes = ApiRes.Replace("</a>", "</NavLink>");
+                rawHtml = new MarkupString(ApiRes.Replace("\\n",""));
+            htmlContent = ApiRes;
+    // Use MarkupString to display raw HTML content
+            
+        }
+        catch (Exception ex)
+        {
+    // Handle exceptions (e.g., display an error message)
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+   
+    static string AddTargetBlank(string input)
+    {
+    // Load the HTML document
+        HtmlDocument htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(input);
+
+    // Select all <a> tags
+        var anchorNodes = htmlDocument.DocumentNode.SelectNodes("//a");
+
+        if (anchorNodes != null)
+        {
+    // Iterate through each <a> tag
+            foreach (var anchorNode in anchorNodes)
+            {
+    // Add or update the target="_blank" attribute
+                anchorNode.SetAttributeValue("target", "_blank");
+            }
+        }
+
+    // Get the updated HTML
+        string updatedHtml = htmlDocument.DocumentNode.OuterHtml;
+
+        return updatedHtml;
+    }
+
+    public class WikiParseResponse
+    {
+        public ParseData Parse { get; set; }
+
+        public class ParseData
+        {
+            public string Title { get; set; }
+            public string PageId { get; set; }
+            public string Text { get; set; }
+        }
+
+    }
+
 }

@@ -40,7 +40,7 @@ namespace Front.Services
             {
                 var result = await response.Content.ReadFromJsonAsync<JWTAndUser>();
 
-                await _sessionStorage.SetAsync("jwt", result.Token);
+                _sessionStorage.SetAsync("jwt", result.Token);
                 return result.User;
             }
              return null;
