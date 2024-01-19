@@ -5,14 +5,21 @@
 @inject AuthenticationStateProvider authStateProvider
 
 
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color: red;">@errorMessage</p>
+}
+
     <InputText @bind-Value="loginModel.Username" placeholder ="Nom d'utilisateur" />
-    <InputText @bind-Value="loginModel.Password" type="password" placeholder="Mot de passe" />
+    <InputText @bind-Value="loginModel.Password" type="password" placeholder="Mot de passe" @onkeyup="HandleKeyUp" />
     <button @onclick="HandleLogin">Login</button>
+
+    
 
 
 @code {
     private LoginModel loginModel = new LoginModel();
-
+    private string errorMessage = "";
 
     private async void HandleLogin()
     {
@@ -25,7 +32,7 @@
         }
         else
         {
-            // Handle failed authentication
+            errorMessage = "Échec de l'authentification. Vérifiez votre nom d'utilisateur et votre mot de passe.";
         }
     }
 
@@ -33,5 +40,13 @@
     {
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            HandleLogin();
+        }
     }
 }
