@@ -4,7 +4,7 @@
 @inject AuthenticationStateProvider authStateProvider
 
 
-<EditForm EditContext="@editContext" Model="@registerModel" OnValidSubmit="HandleRegister">
+<EditForm EditContext="@editContext" Model="@registerModel" OnSubmit="HandleRegister">
     <InputText @bind-Value="registerModel.Username" placeholder="Nom d'utilisateur" />
     <InputText @bind-Value="registerModel.Password" type="password" placeholder="Mot de passe" />
     <InputText @bind-Value="registerModel.Mail" type="email" placeholder="Adresse mail" />
