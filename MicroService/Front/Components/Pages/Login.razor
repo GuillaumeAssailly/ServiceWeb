@@ -6,7 +6,7 @@
 
 
     <InputText @bind-Value="loginModel.Username" placeholder ="Nom d'utilisateur" />
-    <InputText @bind-Value="loginModel.Password" type="password" placeholder="Mot de passe" />
+<InputText @bind-Value="loginModel.Password" type="password" placeholder="Mot de passe" @onkeyup="HandleKeyUp" />
     <button @onclick="HandleLogin">Login</button>
 
 
@@ -33,5 +33,13 @@
     {
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            HandleLogin();
+        }
     }
 }
