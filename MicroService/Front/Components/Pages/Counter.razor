@@ -58,10 +58,19 @@
             ApiRes = Regex.Replace(ApiRes, "<img[^>]*?>", "");
             ApiRes = ApiRes.Replace("\\\"", "'");
             ApiRes = ApiRes.Replace( "'\"", "\"");
-            //ApiRes = AddTargetBlank(ApiRes);
+            ApiRes = RemoveLinksWithoutWiki(ApiRes);
+            ApiRes = ApiRes.Replace("<span class='mw-editsection'><span class='mw-editsection-bracket'>[</span>", "");
+            ApiRes = ApiRes.Replace("<span class='mw-editsection-bracket'>]</span>", "");
+            ApiRes = RemoveTablesByClass(ApiRes, "box-Multiple_issues plainlinks metadata ambox ambox-content ambox-multiple_issues compact-ambox");
+            ApiRes = RemoveTablesByClass(ApiRes, "box-BLP_sources plainlinks metadata ambox ambox-content ambox-BLP_sources");
+
+            ApiRes = Regex.Replace(ApiRes,"External Links", "");        
+    
+    //ApiRes = AddTargetBlank(ApiRes);
             //ApiRes = ApiRes.Replace("<a", "<NavLink");
             //ApiRes = ApiRes.Replace("</a>", "</NavLink>");
                 rawHtml = new MarkupString(ApiRes.Replace("\\n",""));
+
             htmlContent = ApiRes;
     // Use MarkupString to display raw HTML content
             
@@ -89,6 +98,60 @@
             {
     // Add or update the target="_blank" attribute
                 anchorNode.SetAttributeValue("target", "_blank");
+            }
+        }
+
+    // Get the updated HTML
+        string updatedHtml = htmlDocument.DocumentNode.OuterHtml;
+
+        return updatedHtml;
+    }
+
+    static string RemoveLinksWithoutWiki(string input)
+    {
+    // Load the HTML document
+        HtmlDocument htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(input);
+
+    // Select all <a> tags
+        var anchorNodes = htmlDocument.DocumentNode.SelectNodes("//a");
+
+        if (anchorNodes != null)
+        {
+    // Iterate through each <a> tag
+            foreach (var anchorNode in anchorNodes)
+            {
+    // Check if href contains "wiki"
+                var hrefAttribute = anchorNode.Attributes["href"];
+                if (hrefAttribute != null && !hrefAttribute.Value.Contains("wiki"))
+                {
+    // Remove the <a> tag
+                    anchorNode.Remove();
+                }
+            }
+        }
+
+    // Get the updated HTML
+        string updatedHtml = htmlDocument.DocumentNode.OuterHtml;
+
+        return updatedHtml;
+    }
+
+    static string RemoveTablesByClass(string input, string targetClass)
+    {
+    // Load the HTML document
+        HtmlDocument htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(input);
+
+    // Select all <table> tags with the specified class
+        var tableNodes = htmlDocument.DocumentNode.SelectNodes($"//table[contains(@class, '{targetClass}')]");
+
+        if (tableNodes != null)
+        {
+    // Iterate through each <table> tag and remove it
+            foreach (var tableNode in tableNodes)
+            {
+                tableNode.Remove();
             }
         }
 
