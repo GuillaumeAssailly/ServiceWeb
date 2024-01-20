@@ -13,8 +13,13 @@ namespace Front.Services
     public class WikispeediaService
     {
         private readonly HttpClient _httpClient;
+        public System.Timers.Timer timer;
+          public event EventHandler OnGameOver;
+
         public class Game
         {
+            public bool started = false;
+            public TimeSpan timeElapsed = TimeSpan.Zero;
             public string start { get; set; }
             public string startextract { get; set; }
             public string end { get; set; }
@@ -228,6 +233,7 @@ namespace Front.Services
 
             try
             {
+                
                 HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
                 response.EnsureSuccessStatusCode();
 
@@ -242,6 +248,11 @@ namespace Front.Services
                     (game.path.Count == 0 || !string.Equals(newTitle, game.path.Last(), StringComparison.OrdinalIgnoreCase)))
                 {
                     game.path.Add(newTitle);
+                }
+
+                if (game.path.Last() == game.end)
+                {
+                    StopGame();
                 }
 
 
@@ -286,5 +297,35 @@ namespace Front.Services
             }
             return htmlContent;
         }
+
+        public void StartGame()
+        {
+            game.started = true;
+            game.timeElapsed = TimeSpan.Zero;
+            game.path.Clear();
+            if (timer != null)
+            {
+                timer.Stop();
+                timer.Dispose();
+            }
+            timer = new System.Timers.Timer(1000);
+            timer.Elapsed -= Timer_Elapsed;
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
+        }
+
+        public void StopGame()
+        {
+            game.started = false;
+            timer.Stop();
+            timer.Dispose();
+            OnGameOver?.Invoke(this, EventArgs.Empty);
+        }
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            game.timeElapsed = game.timeElapsed.Add(TimeSpan.FromSeconds(1));
+        }
+
+
     }
 }

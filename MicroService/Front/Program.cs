@@ -35,7 +35,6 @@ builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<RegisterService>();
 builder.Services.AddScoped<WikispeediaService>();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
