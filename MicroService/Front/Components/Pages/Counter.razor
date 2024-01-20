@@ -9,169 +9,85 @@
 @using HtmlAgilityPack
 @using Microsoft.AspNetCore.Html
 @using Newtonsoft.Json
+@using JsonSerializer = Newtonsoft.Json.JsonSerializer
 @inject HttpClient _HttpClient
-
-<Navlink href='/weather/'>AIZEIAZEIAZYEZAYE</Navlink>
-<h3>Wikipedia Article Viewer</h3>
-
-
-
+@inject NavigationManager NavigationManager
+@inject WikispeediaService wikiService
 
 @if (!string.IsNullOrEmpty(htmlContent))
-{
+{   
     <div>
-        <h4>HTML Content</h4>
+        <h1>@PageTitle</h1>
         <p>@rawHtml</p>
     </div>
 }
 
-<button @onclick="FetchWikiArticle">Fetch Wikipedia Article</button>
 
 @code {
     [Parameter] public string Id { get; set; }
     private string htmlContent = "";
     private MarkupString rawHtml;
-
+    private string PageTitle;
 
     protected override async Task OnInitializedAsync()
     {
-        await FetchWikiArticle();
+        htmlContent =  await wikiService.FetchWikiArticle($"https://en.wikipedia.org/w/api.php?action=parse&format=json&page={Id}&prop=text&formatversion=2");
+        PageTitle = wikiService.game.path.Last();
+        rawHtml = new MarkupString(htmlContent.Replace("\\n", ""));
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        await FetchWikiArticle();
+        string htmlContent =  await wikiService.FetchWikiArticle($"https://en.wikipedia.org/w/api.php?action=parse&format=json&page={Id}&prop=text&formatversion=2");
+        PageTitle = wikiService.game.path.Last();
+        rawHtml = new MarkupString(htmlContent.Replace("\\n", ""));
+    }
+    /*
+    private async Task RandomPage()
+    {
+        await getRandomId();
     }
 
-    private async Task FetchWikiArticle()
+    private async Task getRandomId()
     {
-
-        string articleTitle = Id; // Specify the desired Wikipedia article title
-        string apiUrl = $"https://en.wikipedia.org/w/api.php?action=parse&format=json&page={Id}&prop=text&formatversion=2";
+        string apiUrl = "https://en.wikipedia.org/w/api.php?action=query&format=json&list=random&rnnamespace=0";
 
         try
         {
             HttpResponseMessage response = await _HttpClient.GetAsync(apiUrl);
             response.EnsureSuccessStatusCode();
 
+            string apiRes = await response.Content.ReadAsStringAsync();
+
+            string pageId = ParsePageId(apiRes);
+
+            response = await _HttpClient.GetAsync($"https://en.wikipedia.org/w/api.php?action=parse&format=json&pageid={pageId}&prop=text&formatversion=2");
+            response.EnsureSuccessStatusCode();
             string ApiRes = await response.Content.ReadAsStringAsync();
-            ApiRes = Regex.Replace(ApiRes, "<img[^>]*?>", "");
-            ApiRes = ApiRes.Replace("\\\"", "'");
-            ApiRes = ApiRes.Replace( "'\"", "\"");
-            ApiRes = RemoveLinksWithoutWiki(ApiRes);
-            ApiRes = ApiRes.Replace("<span class='mw-editsection'><span class='mw-editsection-bracket'>[</span>", "");
-            ApiRes = ApiRes.Replace("<span class='mw-editsection-bracket'>]</span>", "");
-            ApiRes = RemoveTablesByClass(ApiRes, "box-Multiple_issues plainlinks metadata ambox ambox-content ambox-multiple_issues compact-ambox");
-            ApiRes = RemoveTablesByClass(ApiRes, "box-BLP_sources plainlinks metadata ambox ambox-content ambox-BLP_sources");
 
-            ApiRes = Regex.Replace(ApiRes,"External Links", "");        
-    
-    //ApiRes = AddTargetBlank(ApiRes);
-            //ApiRes = ApiRes.Replace("<a", "<NavLink");
-            //ApiRes = ApiRes.Replace("</a>", "</NavLink>");
-                rawHtml = new MarkupString(ApiRes.Replace("\\n",""));
+            var parseResult = JsonConvert.DeserializeObject<ParseResult>(ApiRes);
+            string pageTitle = parseResult.Parse.Title;
+            NavigationManager.NavigateTo($"/wiki/{pageTitle}");
 
-            htmlContent = ApiRes;
-    // Use MarkupString to display raw HTML content
-            
+
         }
         catch (Exception ex)
         {
-    // Handle exceptions (e.g., display an error message)
             Console.WriteLine($"Error: {ex.Message}");
         }
+
+
     }
-   
-    static string AddTargetBlank(string input)
+
+    static string ParsePageId(string json)
     {
-    // Load the HTML document
-        HtmlDocument htmlDocument = new HtmlDocument();
-        htmlDocument.LoadHtml(input);
-
-    // Select all <a> tags
-        var anchorNodes = htmlDocument.DocumentNode.SelectNodes("//a");
-
-        if (anchorNodes != null)
-        {
-    // Iterate through each <a> tag
-            foreach (var anchorNode in anchorNodes)
-            {
-    // Add or update the target="_blank" attribute
-                anchorNode.SetAttributeValue("target", "_blank");
-            }
-        }
-
-    // Get the updated HTML
-        string updatedHtml = htmlDocument.DocumentNode.OuterHtml;
-
-        return updatedHtml;
+        int startIndex = json.IndexOf("\"id\":") + 5;
+        int endIndex = json.IndexOf(",", startIndex);
+        return json.Substring(startIndex, endIndex - startIndex);
     }
+     */
 
-    static string RemoveLinksWithoutWiki(string input)
-    {
-    // Load the HTML document
-        HtmlDocument htmlDocument = new HtmlDocument();
-        htmlDocument.LoadHtml(input);
-
-    // Select all <a> tags
-        var anchorNodes = htmlDocument.DocumentNode.SelectNodes("//a");
-
-        if (anchorNodes != null)
-        {
-    // Iterate through each <a> tag
-            foreach (var anchorNode in anchorNodes)
-            {
-    // Check if href contains "wiki"
-                var hrefAttribute = anchorNode.Attributes["href"];
-                if (hrefAttribute != null && !hrefAttribute.Value.Contains("wiki"))
-                {
-    // Remove the <a> tag
-                    anchorNode.Remove();
-                }
-            }
-        }
-
-    // Get the updated HTML
-        string updatedHtml = htmlDocument.DocumentNode.OuterHtml;
-
-        return updatedHtml;
-    }
-
-    static string RemoveTablesByClass(string input, string targetClass)
-    {
-    // Load the HTML document
-        HtmlDocument htmlDocument = new HtmlDocument();
-        htmlDocument.LoadHtml(input);
-
-    // Select all <table> tags with the specified class
-        var tableNodes = htmlDocument.DocumentNode.SelectNodes($"//table[contains(@class, '{targetClass}')]");
-
-        if (tableNodes != null)
-        {
-    // Iterate through each <table> tag and remove it
-            foreach (var tableNode in tableNodes)
-            {
-                tableNode.Remove();
-            }
-        }
-
-    // Get the updated HTML
-        string updatedHtml = htmlDocument.DocumentNode.OuterHtml;
-
-        return updatedHtml;
-    }
-
-    public class WikiParseResponse
-    {
-        public ParseData Parse { get; set; }
-
-        public class ParseData
-        {
-            public string Title { get; set; }
-            public string PageId { get; set; }
-            public string Text { get; set; }
-        }
-
-    }
+    
+    
 
 }

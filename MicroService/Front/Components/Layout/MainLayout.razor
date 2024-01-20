@@ -1,25 +1,30 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider authStateProvider
-
+@inject WikispeediaService wikiService
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
-
+    
     <main>
-        <div class="top-row px-4">
-            <AuthorizeView>
-                <Authorized>
-                    <p>Hello, @context.User.Identity.Name !</p>
-                    <a @onclick="Logout">Logout</a>
-                </Authorized>
-                <NotAuthorized>
-                    <p>You're not connected.</p>
-                </NotAuthorized>
-            </AuthorizeView>
-            
-        </div>
+       
+            <div class="top-row px-4 d-flex justify-content-between align-items-center">
+                <h3 class="flex-grow-1">From @start to @end</h3>
+
+
+                <AuthorizeView>
+                    <Authorized>
+                        <p>Hello, @context.User.Identity.Name !</p>
+                        <a @onclick="Logout">Logout</a>
+                    </Authorized>
+                    <NotAuthorized>
+                        <p>You're not connected.</p>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+       
+
 
         <article class="content px-4">
             @Body
@@ -34,6 +39,15 @@
 </div>
 
 @code {
+
+private string? start;
+private string? end;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        start = wikiService.game?.start;
+        end = wikiService.game?.end;
+    }
 
     private async void Logout()
     {
