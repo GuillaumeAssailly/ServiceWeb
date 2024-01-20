@@ -14,13 +14,51 @@
 @inject NavigationManager NavigationManager
 @inject WikispeediaService wikiService
 
-@if (!string.IsNullOrEmpty(htmlContent))
-{   
-    <div>
-        <h1>@PageTitle</h1>
-        <p>@rawHtml</p>
+<style>
+    #contentColumn {
+        margin-left: 50px;
+    }
+
+    #stickyColumn {
+        position: fixed;
+        top:0;
+        right: 0;
+        padding-top: 60px;
+        overflow-y: auto;
+        height: 100%;
+        width: 300px; /* Set a fixed width for the fixed column */
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-9" id="contentColumn">
+            @if (!string.IsNullOrEmpty(htmlContent))
+            {
+                <div>
+                    <h1>@PageTitle</h1>
+                    <p>@rawHtml</p>
+                </div>
+            }
+        </div>
     </div>
-}
+</div>
+
+<div id="stickyColumn">
+    <div>
+        <h3>History : </h3>
+        <ul>
+            @foreach (var item in wikiService.game.path)
+            {
+                <li>
+                    @item
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+
 
 
 @code {
@@ -86,6 +124,8 @@
         return json.Substring(startIndex, endIndex - startIndex);
     }
      */
+
+
 
     
     

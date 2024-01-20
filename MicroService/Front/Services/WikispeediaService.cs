@@ -236,7 +236,14 @@ namespace Front.Services
                 var parseResult = JsonConvert.DeserializeObject<ParseResult>(ApiRes);
 
                 htmlContent = parseResult.Parse.Text;
-                game.path.Add(parseResult.Parse.Title);
+                string newTitle = parseResult.Parse.Title;
+
+                if (!string.IsNullOrEmpty(newTitle) &&
+                    (game.path.Count == 0 || !string.Equals(newTitle, game.path.Last(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    game.path.Add(newTitle);
+                }
+
 
                 //ApiRes = Regex.Replace(ApiRes, "<img[^>]*?>", "");
                 htmlContent = htmlContent.Replace("\\\"", "'");

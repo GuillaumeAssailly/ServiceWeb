@@ -45,7 +45,9 @@
 
     private async Task StartGame()
     {
+        wikiSpeedRunService.game.path = new List<string>();
         NavigationManager.NavigateTo($"/wiki/{start}");
+
     }
 
     private async Task SearchStart()

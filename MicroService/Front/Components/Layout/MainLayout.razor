@@ -9,20 +9,29 @@
     
     <main>
        
-            <div class="top-row px-4 d-flex justify-content-between align-items-center">
-                <h3 class="flex-grow-1">From @start to @end</h3>
+        <div class="top-row px-4 d-flex justify-content-between align-items-center">
+           @if (NavigationManager.Uri.Contains("/wiki/"))
+           {
+            <h3 class="flex-grow-1">From @start to @end</h3>
+           }
+           else
+           {
+               <h3 class="flex-grow-1">Welcome to Wikispeedia !</h3>
+           }
 
 
-                <AuthorizeView>
-                    <Authorized>
-                        <p>Hello, @context.User.Identity.Name !</p>
-                        <a @onclick="Logout">Logout</a>
-                    </Authorized>
-                    <NotAuthorized>
-                        <p>You're not connected.</p>
-                    </NotAuthorized>
-                </AuthorizeView>
-            </div>
+            <AuthorizeView>
+                <Authorized>
+                    <p>Hello, @context.User.Identity.Name !</p>
+                    <a @onclick="Logout">Logout</a>
+                </Authorized>
+                <NotAuthorized>
+                    <p>You're not connected.</p>
+                </NotAuthorized>
+            </AuthorizeView>
+
+        </div>
+                
        
 
 
