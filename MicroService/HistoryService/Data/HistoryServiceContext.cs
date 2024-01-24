@@ -1,7 +1,6 @@
 ﻿using HistoryService.Entities;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace HistoryService.Data
 {
     public class HistoryServiceContext : DbContext

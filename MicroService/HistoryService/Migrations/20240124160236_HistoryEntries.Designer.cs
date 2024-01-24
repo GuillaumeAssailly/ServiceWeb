@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HistoryService.Migrations
 {
     [DbContext(typeof(HistoryServiceContext))]
-    [Migration("20240124145902_HistoryEntries")]
+    [Migration("20240124160236_HistoryEntries")]
     partial class HistoryEntries
     {
         /// <inheritdoc />
@@ -39,6 +39,10 @@ namespace HistoryService.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

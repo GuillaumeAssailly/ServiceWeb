@@ -18,6 +18,7 @@ namespace HistoryService.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
                     Start = table.Column<string>(type: "TEXT", nullable: false),
                     End = table.Column<string>(type: "TEXT", nullable: false),
                     Path = table.Column<string>(type: "TEXT", nullable: false)

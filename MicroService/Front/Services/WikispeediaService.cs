@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Html;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
+using Front.Entities;
+using NuGet.Protocol;
 
 namespace Front.Services
 {
@@ -30,17 +34,23 @@ namespace Front.Services
         }
 
         public Game game;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-        public WikispeediaService(HttpClient httpClient)
+        public WikispeediaService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new System.Uri("http://localhost:5052");
+
+            _authenticationStateProvider = authenticationStateProvider;
+
             game = new Game();
         }
 
         public async Task SearchStart()
         {
-            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            string pageTitle = "Wikipedia";
+            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
 
             try
             {
@@ -71,7 +81,9 @@ namespace Front.Services
 
         public async Task SearchEnd()
         {
-            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            string pageTitle = "Volunteering";  // United_States
+            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
 
             try
             {
@@ -79,7 +91,7 @@ namespace Front.Services
                 response.EnsureSuccessStatusCode();
 
                 string apiRes = await response.Content.ReadAsStringAsync();
-
+                
                 var result = JsonConvert.DeserializeObject<WikipediaApiResponse>(apiRes);
 
                 if (result?.Query?.Pages != null)
@@ -320,12 +332,55 @@ namespace Front.Services
             timer.Stop();
             timer.Dispose();
             OnGameOver?.Invoke(this, EventArgs.Empty);
+
+            sendGameToDB();
+
         }
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             game.timeElapsed = game.timeElapsed.Add(TimeSpan.FromSeconds(1));
         }
 
+        public async Task sendGameToDB()
+        {
+            try
+            {
+                var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+
+                if (user.Identity.IsAuthenticated)
+                {
+                    var userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+
+                    if (userId != null)
+                    {
+                        using (var httpClientHistory = new HttpClient())
+                        {
+                            httpClientHistory.BaseAddress = new Uri("http://127.0.0.1:5097/");
+                            Console.WriteLine($"Ajout de l'id suivant : {userId}");
+                            
+                            Entry entry = new Entry()
+                            {
+                                UserId = userId, 
+                                Start =  game.start,
+                                End = game.end,
+                                Path = game.path,
+                                Timestamp = game.timeElapsed
+                            };
+                            Console.WriteLine($"Entry : {entry.ToJson()}");
+                            var response =await httpClientHistory.PostAsJsonAsync("/api/History/add", entry);
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur : {ex.Message}");
+            }
+
+        }
 
     }
 }

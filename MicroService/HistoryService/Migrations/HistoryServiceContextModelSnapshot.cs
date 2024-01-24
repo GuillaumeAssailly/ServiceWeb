@@ -38,6 +38,10 @@ namespace HistoryService.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.ToTable("HistoryEntries");

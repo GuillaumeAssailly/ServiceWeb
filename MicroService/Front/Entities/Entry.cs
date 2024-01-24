@@ -1,4 +1,4 @@
-﻿namespace HistoryService.Entities
+﻿namespace Front.Entities
 {
     public class Entry
     {
@@ -9,5 +9,4 @@
         public string End { get; set; }
         public List<string> Path { get; set; }
     }
-
 }

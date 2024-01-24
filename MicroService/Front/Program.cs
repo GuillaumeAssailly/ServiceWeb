@@ -33,6 +33,7 @@ builder.Services.AddScoped<ProtectedLocalStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<RegisterService>();
+builder.Services.AddScoped<SettingsService>();
 builder.Services.AddScoped<WikispeediaService>();
 
 var app = builder.Build();

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HistoryService.Data;
 using HistoryService.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HistoryService.Controllers
 {
@@ -25,6 +26,16 @@ namespace HistoryService.Controllers
         {
             return _dbContext.HistoryEntries.ToList();
         }
+        public IEnumerable<Entry> GetHistoryEntriesByUserId(int userId)
+        {
+            return _dbContext.HistoryEntries.Where(entry => entry.UserId == userId.ToString()).ToList();
+        }
+        public async Task DeleteEntry(int id)
+        {
+            var entry = await _dbContext.HistoryEntries.FindAsync(id);
+            _dbContext.HistoryEntries.Remove(entry);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
 
@@ -42,8 +53,16 @@ namespace HistoryService.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddHistoryEntry(Entry historyEntry)
         {
+            Console.WriteLine("Ajout d'une entrée");
             await _historyService.SaveHistoryEntry(historyEntry);
             return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEntry(int id)
+        {
+            await _historyService.DeleteEntry(id);
+            return NoContent();
         }
 
         [HttpGet("all")]
@@ -52,6 +71,26 @@ namespace HistoryService.Controllers
             var historyEntries = _historyService.GetHistoryEntries();
             return Ok(historyEntries);
         }
+
+
+        [HttpGet("{userId}")]
+        public IActionResult GetHistoryEntriesByUserId(int userId)
+        {
+
+            var historyEntries = _historyService.GetHistoryEntriesByUserId(userId);
+
+            if (historyEntries == null || !historyEntries.Any())
+            {
+                return NotFound($"Aucune entrée d'historique trouvée pour l'utilisateur avec l'ID {userId}.");
+            }
+
+            return Ok(historyEntries);
+        }
+
+
+
+
+
     }
 
 }

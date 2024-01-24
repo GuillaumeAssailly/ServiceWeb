@@ -1,8 +1,10 @@
 ﻿@inject HttpClient _HttpClient
 @inject NavigationManager NavigationManager
+@inject SettingsService SettingsService
 
 @page "/settings"
 @using Newtonsoft.Json
+@using System.Net
 
 <style>
     * {
@@ -17,13 +19,13 @@
 
 @if (IsUserListVisible)
 {
-    @if (Users != null && Users.Any())
+    @if (SettingsService.Users != null && SettingsService.Users.Any())
     {
         <h3>Liste des Utilisateurs</h3>
         <ul>
-            @foreach (var user in Users)
+            @foreach (var user in SettingsService.Users)
             {
-                <li>Id : @user.Id       Name : @user.Name       eMail : @user.Email</li>
+                <li>Id : @user.Id       Name : @user.Name       eMail : @user.Email <button @onclick="() => deleteUser(user.Id)">Delete</button></li>
             }
         </ul>
     }
@@ -33,28 +35,102 @@
     }
 }
 
+<button @onclick="ToggleHistory">Afficher/Masquer l'historique de parties'</button>
+@if (IsHistoryVisible)
+{
+    @if (SettingsService.History != null)
+    {
+        <h3>Historique des parties</h3>
+        <ul>
+            @foreach (var entry in SettingsService.History)
+            {
+                <li>Id : @entry.Id UserId : @entry.UserId 
+                    <ul>
+                        @foreach(var element in entry.Path)
+                        {
+                            <li>@element </li>
+                        }
+                    </ul>
+                    Temps : @entry.Timestamp
+                </li>
+                
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Aucune partie trouvée.</p>
+    }
+}
+
+
+<button @onclick="ToggleAllHistory">Afficher/Masquer l'historique de l'ensemble des parties'</button>
+@if (IsAllHistoryVisible)
+{
+    @if(SettingsService.AllHistory != null)
+    {
+        <h3>Historique de l'ensemble des parties</h3>
+        <ul>
+            @foreach (var entry in SettingsService.AllHistory)
+            {
+                <li>
+                    Id : @entry.Id UserId : @entry.UserId
+                    <ul>
+                        @foreach (var element in entry.Path)
+                        {
+                            <li>@element </li>
+                        }
+                    </ul>
+                    Temps : @entry.Timestamp
+                    <button @onclick="() => deleteEntry(entry.Id)">Delete</button>
+                </li>
+
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Aucune partie trouvée.</p>
+    }
+}
+
 @code {
-    private List<UserDTO> Users;
+    private bool IsUserListVisible = false;
+    private bool IsHistoryVisible = false;
+    private bool IsAllHistoryVisible = false;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            _HttpClient.BaseAddress = new Uri("http://127.0.0.1:5001/"); 
-
-            Users = await _HttpClient.GetFromJsonAsync<List<UserDTO>>("api/Users");
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur : {ex.Message}");
-        }
+        await SettingsService.getUserList();
+        await SettingsService.getHistory();
+        await SettingsService.getAllHistory();
     }
 
-    private bool IsUserListVisible = false;
 
     private void ToggleUserList()
     {
         IsUserListVisible = !IsUserListVisible;
     }
+    private void ToggleHistory()
+    {
+        IsHistoryVisible = !IsHistoryVisible;
+    }
+    private void ToggleAllHistory()
+    {
+        IsAllHistoryVisible = !IsAllHistoryVisible;
+    }
+
+    private async Task deleteUser(int id)
+    {
+        await SettingsService.deleteUser(id);
+    }
+
+    private async Task deleteEntry(int id)
+    {
+        await SettingsService.deleteEntry(id);
+    }
+
+
+
+
 }
