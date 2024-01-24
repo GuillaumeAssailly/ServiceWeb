@@ -1,0 +1,60 @@
+﻿@inject HttpClient _HttpClient
+@inject NavigationManager NavigationManager
+
+@page "/settings"
+@using Newtonsoft.Json
+
+<style>
+    * {
+        list-style-type: none;
+        padding: 0; 
+    }
+</style>
+
+<h1>Settings</h1>
+
+<button @onclick="ToggleUserList">Afficher/Masquer la Liste des Utilisateurs</button>
+
+@if (IsUserListVisible)
+{
+    @if (Users != null && Users.Any())
+    {
+        <h3>Liste des Utilisateurs</h3>
+        <ul>
+            @foreach (var user in Users)
+            {
+                <li>Id : @user.Id       Name : @user.Name       eMail : @user.Email</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Aucun utilisateur trouvé.</p>
+    }
+}
+
+@code {
+    private List<UserDTO> Users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _HttpClient.BaseAddress = new Uri("http://127.0.0.1:5001/"); 
+
+            Users = await _HttpClient.GetFromJsonAsync<List<UserDTO>>("api/Users");
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur : {ex.Message}");
+        }
+    }
+
+    private bool IsUserListVisible = false;
+
+    private void ToggleUserList()
+    {
+        IsUserListVisible = !IsUserListVisible;
+    }
+}
