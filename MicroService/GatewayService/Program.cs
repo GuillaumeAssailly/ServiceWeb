@@ -57,7 +57,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidAudience = "localhost:5000",
-            ValidIssuer = "TodoProject",
+            ValidIssuer = "Issuer",
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("3f8aba3c3cfaa6ac99a153834438bc43e595e62c59c4385b4c1f9e31ed495eaa"))
         };

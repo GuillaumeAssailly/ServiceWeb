@@ -7,6 +7,7 @@ using UserService.Entities;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace GatewayService.Controllers
 {
@@ -41,7 +42,7 @@ namespace GatewayService.Controllers
                 {
                     // You can deserialize the response content here if needed
                     var result = await response.Content.ReadFromJsonAsync<UserDTO>();
-                    var jwt = GenerateJwtToken(result.Id);
+                    var jwt = GenerateJwtToken(result);
                     var userAndToken = new JWTAndUser { Token = jwt, User = result };
                     return Ok(userAndToken);
                 }
@@ -105,24 +106,37 @@ namespace GatewayService.Controllers
             Console.WriteLine("jwt");
             return Ok($"Hello, {userName}");
         }
-        private string GenerateJwtToken(int userId)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim("UserId", userId.ToString())
-            };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSecretKeyLongLongLongLongEnough"));
+        private string? GenerateJwtToken(UserDTO userDto)
+        {
+            var secretKey = "3f8aba3c3cfaa6ac99a153834438bc43e595e62c59c4385b4c1f9e31ed495eaa";
+            var issuer = "Issuer";
+            var audience = "localhost:5000";
+
+            if (secretKey == null) return null;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            if (userDto.Name == null) return null;
+            var claims = new List<Claim>
+        {
+            new (JwtRegisteredClaimNames.Email, userDto.Email),
+            new ("name", userDto.Name),
+            new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new (JwtRegisteredClaimNames.Sub, userDto.Id.ToString())
+        };
+
+            
             var token = new JwtSecurityToken(
-                issuer: "TodoProject",
-                audience: "localhost:5000",
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(3000),
+                expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        
     }
 }
