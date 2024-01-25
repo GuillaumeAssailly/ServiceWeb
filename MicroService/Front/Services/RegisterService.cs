@@ -19,7 +19,7 @@ namespace Front.Services
             _httpClient.BaseAddress = new System.Uri("http://localhost:5000");
         }
 
-        public async Task<UserDTO> RegisterUser(string username, string password, string mail)
+        public async Task<JWTAndUser> RegisterUser(string username, string password, string mail)
         {
 
             UserCreateModel user = new UserCreateModel()
@@ -33,7 +33,7 @@ namespace Front.Services
             
             if(response.StatusCode == HttpStatusCode.OK)
             {
-                var result = await response.Content.ReadFromJsonAsync<UserDTO>();
+                var result = await response.Content.ReadFromJsonAsync<JWTAndUser>();
                 return result;
             } else if (response.StatusCode == HttpStatusCode.Conflict)
             {

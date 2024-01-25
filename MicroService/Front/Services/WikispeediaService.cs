@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using Front.Entities;
 using NuGet.Protocol;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using System.Net.Http.Headers;
 
 namespace Front.Services
 {
@@ -35,13 +37,14 @@ namespace Front.Services
 
         public Game game;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private ProtectedLocalStorage _localStorage;
 
-        public WikispeediaService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider)
+        public WikispeediaService(HttpClient httpClient, ProtectedLocalStorage localStorage, AuthenticationStateProvider authenticationStateProvider)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new System.Uri("http://localhost:5052");
-
             _authenticationStateProvider = authenticationStateProvider;
+            _localStorage = localStorage;
 
             game = new Game();
         }
@@ -357,8 +360,12 @@ namespace Front.Services
                     {
                         using (var httpClientHistory = new HttpClient())
                         {
-                            httpClientHistory.BaseAddress = new Uri("http://127.0.0.1:5097/");
-                            Console.WriteLine($"Ajout de l'id suivant : {userId}");
+                            var jwtToken = await _localStorage.GetAsync<string>("jwt");
+
+                            Console.WriteLine($"JWT TOKEN : {jwtToken.Value}");
+                            Console.WriteLine($"sessionStorage: {_localStorage.ToJson()}");
+
+                            httpClientHistory.BaseAddress = new Uri("http://127.0.0.1:5000/");
                             
                             Entry entry = new Entry()
                             {
@@ -369,6 +376,8 @@ namespace Front.Services
                                 Timestamp = game.timeElapsed
                             };
                             Console.WriteLine($"Entry : {entry.ToJson()}");
+                            httpClientHistory.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken.Value);
+
                             var response =await httpClientHistory.PostAsJsonAsync("/api/History/add", entry);
 
                         }

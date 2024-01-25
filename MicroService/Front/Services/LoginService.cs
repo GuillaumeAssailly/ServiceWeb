@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -15,15 +16,13 @@ namespace Front.Services
     public class LoginService
     {
         private readonly HttpClient _httpClient;
-        private ProtectedLocalStorage _sessionStorage;
-        public LoginService(HttpClient httpClient, ProtectedLocalStorage sessionStorage)
+        public LoginService(HttpClient httpClient)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new System.Uri("http://localhost:5000");
-            _sessionStorage = sessionStorage;
         }
 
-        public async Task<UserDTO> AuthenticateUser(string username, string password)
+        public async Task<JWTAndUser> AuthenticateUser(string username, string password)
         {
 
             UserLogin user = new UserLogin()
@@ -38,10 +37,15 @@ namespace Front.Services
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var result = await response.Content.ReadFromJsonAsync<JWTAndUser>();
+                
 
-                _sessionStorage.SetAsync("jwt", result.Token);
-                return result.User;
+                var result = await response.Content.ReadFromJsonAsync<JWTAndUser>();
+                //var jwtToken = result.Token;
+                //Console.WriteLine($"jwt token into localStorage [{jwtToken}");
+                //await _localStorage.SetItemAsStringAsync("jwt", jwtToken);
+                //var jwtQuoted = await _localStorage.GetItemAsStringAsync("jwt");
+                //Console.WriteLine($"localstorage LOGIN service: {jwtQuoted}");
+                return result;
             }
              return null;
             

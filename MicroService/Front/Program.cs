@@ -3,19 +3,12 @@ using Front.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
 
 builder.Services
     .AddAuthentication(options => {
@@ -30,6 +23,7 @@ builder.Services.AddAuthenticationCore();
 builder.Services.AddHttpClient();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<ProtectedLocalStorage>();
+
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<RegisterService>();
@@ -54,4 +48,3 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
-

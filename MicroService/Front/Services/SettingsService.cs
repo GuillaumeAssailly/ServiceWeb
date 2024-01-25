@@ -1,6 +1,9 @@
 ﻿using Front.Entities;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Newtonsoft.Json.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 
 
@@ -13,10 +16,11 @@ namespace Front.Services
         public List<Entry> History;
         public List<Entry> AllHistory;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
-
-        public SettingsService(AuthenticationStateProvider authenticationStateProvider)
+        private ProtectedLocalStorage _localStorage;
+        public SettingsService(AuthenticationStateProvider authenticationStateProvider, ProtectedLocalStorage localStorage)
         {
             _authenticationStateProvider = authenticationStateProvider;
+            _localStorage = localStorage;
         }
         public async Task getUserList()
         {
@@ -140,7 +144,9 @@ namespace Front.Services
             {
                 using (var httpClient = new HttpClient())
                 {
-                    httpClient.BaseAddress = new Uri("http://127.0.0.1:5097");
+                    var jwtToken = await _localStorage.GetAsync<string>("jwt");
+                    httpClient.BaseAddress = new Uri("http://127.0.0.1:5000");
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken.Value);
                     HttpResponseMessage response = await httpClient.DeleteAsync($"api/History/{id}");
                     await RafreshHistory();
                 }
