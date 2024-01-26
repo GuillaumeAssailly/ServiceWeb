@@ -10,6 +10,7 @@
 - Lorsqu'on arrive au bout, le chronomètre s'arrête, cliquer sur le bouton End Game qui apparait alors pour sauvegarder la partie et revenir sur le menu principal.
 - En cours de partie, passer sa souris sur le nom de la page d'arrivée ou de départ pour voir apparaître un tooltip avec le résumé de la page correspondant, pour savoir par où chercher.
 
+Note : pour l'instant, on ne sauvegarde qu'une partie lorsqu'elle est terminée. 
 
 ### Fonctionnalités implémentées :
 - Jeu Wikispeedia avec appels d'API de Wikipedia fonctionnel
