@@ -7,17 +7,17 @@
 
 
 
-<AuthorizeView Roles="User">
-<Authorized>
-    @if (SettingsService.History != null)
-    {
-        <h1>Your Previous Games : </h1>
-        <ul>
-            @foreach (var entry in SettingsService.History)
-            {
+<AuthorizeView Roles="User,Admin">
+    <Authorized >
+        @if (SettingsService.History != null)
+        {
+            <h1>Your Previous Games : </h1>
+            <ul>
+                @foreach (var entry in SettingsService.History)
+                {
            
-                <hr>
-                <h2>From @entry.Start to @entry.End</h2>
+                    <hr>
+                    <h2>From @entry.Start to @entry.End</h2>
                     <p>Time : @entry.Timestamp </p>
                     <ul>
                         @foreach(var element in entry.Path)
@@ -30,18 +30,24 @@
           
         
             
-            }
-        </ul>
-    }
-    else
-    {
-        <p>No previous games</p>
-    }
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No previous games</p>
+        }
 
-</Authorized>
-<NotAuthorized>
-    <p>You're not connected.</p>
-</NotAuthorized>
+    </Authorized>
+   
+    <NotAuthorized>
+        <p>You're not connected.</p>
+    </NotAuthorized>
+</AuthorizeView>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <p>Welcome aboard, captain.</p>
+    </Authorized>
 </AuthorizeView>
 
 @code

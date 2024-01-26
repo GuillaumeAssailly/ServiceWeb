@@ -3,15 +3,28 @@
 @inject RegisterService registerService
 @inject AuthenticationStateProvider authStateProvider
 
-
-<EditForm EditContext="@editContext" Model="@registerModel" OnValidSubmit="HandleRegister">
-    <InputText @bind-Value="registerModel.Username" placeholder="Nom d'utilisateur" />
-    <InputText @bind-Value="registerModel.Password" type="password" placeholder="Mot de passe" />
-    <InputText @bind-Value="registerModel.Mail" type="email" placeholder="Adresse mail" />
-    <button type="submit">Register</button>
-</EditForm>
-
-
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h3 class="mb-3">Register</h3>
+            <EditForm EditContext="@editContext" Model="@registerModel" OnValidSubmit="HandleRegister">
+                <div class="mb-3">
+                    <label for="Username" class="form-label">Username</label>
+                    <InputText @bind-Value="registerModel.Username" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Password</label>
+                    <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="Mail" class="form-label">Email</label>
+                    <InputText @bind-Value="registerModel.Mail" type="email" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 
 @code {
@@ -31,7 +44,7 @@
         {
             var userClaim = await ((CustomAuthenticationStateProvider)authStateProvider).MarkUserAsAuthenticated(user);
 
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/", forceLoad:true);
         }
         else
         {

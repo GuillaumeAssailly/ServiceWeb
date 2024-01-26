@@ -14,85 +14,68 @@
 </style>
 
 <h1>Settings</h1>
-
-<button @onclick="ToggleUserList">Afficher/Masquer la Liste des Utilisateurs</button>
-
-@if (IsUserListVisible)
-{
-    @if (SettingsService.Users != null && SettingsService.Users.Any())
-    {
-        <h3>Liste des Utilisateurs</h3>
-        <ul>
-            @foreach (var user in SettingsService.Users)
-            {
-                <li>Id : @user.Id       Name : @user.Name       eMail : @user.Email <button @onclick="() => deleteUser(user.Id)">Delete</button></li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p>Aucun utilisateur trouvé.</p>
-    }
-}
-
-<button @onclick="ToggleHistory">Afficher/Masquer l'historique de parties'</button>
-@if (IsHistoryVisible)
-{
-    @if (SettingsService.History != null)
-    {
-        <h3>Historique des parties</h3>
-        <ul>
-            @foreach (var entry in SettingsService.History)
-            {
-                <li>Id : @entry.Id UserId : @entry.UserId 
-                    <ul>
-                        @foreach(var element in entry.Path)
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    
+                        @if (SettingsService.Users != null && SettingsService.Users.Any())
                         {
-                            <li>@element </li>
+                            <h3>User List</h3>
+                            <ul class="list-group">
+                                @foreach (var user in SettingsService.Users)
+                                {
+                                    <li class="list-group-item">
+                                        Id: @user.Id, Name: @user.Name, eMail: @user.Email
+                                        <button class="btn btn-danger btn-sm float-end" @onclick="() => deleteUser(user.Id)">Delete</button>
+                                    </li>
+                                }
+                            </ul>
                         }
-                    </ul>
-                    Temps : @entry.Timestamp
-                </li>
-                
-            }
-        </ul>
-    }
-    else
-    {
-        <p>Aucune partie trouvée.</p>
-    }
-}
-
-
-<button @onclick="ToggleAllHistory">Afficher/Masquer l'historique de l'ensemble des parties'</button>
-@if (IsAllHistoryVisible)
-{
-    @if(SettingsService.AllHistory != null)
-    {
-        <h3>Historique de l'ensemble des parties</h3>
-        <ul>
-            @foreach (var entry in SettingsService.AllHistory)
-            {
-                <li>
-                    Id : @entry.Id UserId : @entry.UserId
-                    <ul>
-                        @foreach (var element in entry.Path)
+                        else
                         {
-                            <li>@element </li>
+                            <p class="text-muted">No users found.</p>
                         }
-                    </ul>
-                    Temps : @entry.Timestamp
-                    <button @onclick="() => deleteEntry(entry.Id)">Delete</button>
-                </li>
+                        <br/>
 
-            }
-        </ul>
-    }
-    else
-    {
-        <p>Aucune partie trouvée.</p>
-    }
-}
+
+                    
+                        @if (SettingsService.AllHistory != null)
+                        {
+                            <h3>History of all games : </h3>
+                            <ul class="list-group">
+                                @foreach (var entry in SettingsService.AllHistory)
+                                {
+                                    <li class="list-group-item">
+                                        Id: @entry.Id, UserId: @entry.UserId
+                                        <ul>
+                                            @foreach (var element in entry.Path)
+                                            {
+                                                <li>@element</li>
+                                            }
+                                        </ul>
+                                        Temps: @entry.Timestamp
+                                        <button class="btn btn-danger btn-sm float-end" @onclick="() => deleteEntry(entry.Id)">Delete</button>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No game could be found.</p>
+                        }
+                   
+                </Authorized>
+                <NotAuthorized>
+                    <p class="text-danger">You need some privileges to view this.</p>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+</div>
+
+
 
 @code {
     private bool IsUserListVisible = false;

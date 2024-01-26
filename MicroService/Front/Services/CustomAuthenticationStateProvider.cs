@@ -25,10 +25,10 @@ namespace Front.Services
             //var jwtToken = await _sessionStorage.GetAsync<string>("jwt");
             //Console.WriteLine($"UserName : {userSession.Value.Name}");
             //Console.WriteLine($"JWT Token : {jwtToken.Value}");
-
+            bool isAdmin = (user.User.isAdmin ?? false);
             var claims = new[] {
                 new Claim(ClaimTypes.Name, user.User.Name),
-                new Claim(ClaimTypes.Role, "User"),
+                new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "User"),
                 new Claim(ClaimTypes.NameIdentifier, user.User.Id.ToString())
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -55,9 +55,11 @@ namespace Front.Services
             if(userSession.Success && userSession.Value != null)
             {
                 var user = userSession.Value;
+                bool isAdmin = (user.isAdmin ?? false);
+
                 var claims = new[] {
                     new Claim(ClaimTypes.Name, user.Name),
-                    new Claim(ClaimTypes.Role, "User"),
+                    new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "User"),
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 };
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
