@@ -8,7 +8,7 @@
 - Les pages sont filtrées pour supprimer les liens extérieurs et les références bibliographiques + les liens d'éditions des articles, les liens cliquables sur les images, etc.
 - Il est possible de revenir en arrière sur la page précédente de sa partie, si jamais on est parti sur une mauvaise piste.
 - Lorsqu'on arrive au bout, le chronomètre s'arrête, cliquer sur le bouton End Game qui apparait alors pour sauvegarder la partie et revenir sur le menu principal.
-  
+- En cours de partie, passer sa souris sur le nom de la page d'arrivée ou de départ pour voir apparaître un tooltip avec le résumé de la page correspondant, pour savoir par où chercher.
 
 
 ### Fonctionnalités implémentées :
