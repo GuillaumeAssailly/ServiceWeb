@@ -100,9 +100,7 @@ namespace Front.Services
 
                 if (user.Identity.IsAuthenticated)
                 {
-                    // var userId = user.Identity.Name;
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
-
 
                     if (userId != null)
                     {

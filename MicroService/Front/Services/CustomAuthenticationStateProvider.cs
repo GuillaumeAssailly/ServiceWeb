@@ -22,9 +22,6 @@ namespace Front.Services
         {
             await _sessionStorage.SetAsync("jwt", user.Token);
             await _sessionStorage.SetAsync("User", user.User);
-            //var jwtToken = await _sessionStorage.GetAsync<string>("jwt");
-            //Console.WriteLine($"UserName : {userSession.Value.Name}");
-            //Console.WriteLine($"JWT Token : {jwtToken.Value}");
             bool isAdmin = (user.User.isAdmin ?? false);
             var claims = new[] {
                 new Claim(ClaimTypes.Name, user.User.Name),

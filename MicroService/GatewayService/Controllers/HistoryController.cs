@@ -23,20 +23,20 @@ namespace GatewayService.Controllers
         private bool CheckJWT() { 
            var token = HttpContext.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last().Trim('"');
            if (string.IsNullOrEmpty(token))
-            {
-                Console.WriteLine("no token");
-                return false;
-            }
-            try
-            {
-                Console.WriteLine($"token: {token}");
-                ClaimsPrincipal principal = _jwtService.ValidateToken(token);
-                return true;
-            } catch( Exception ex)
-            {
-                Console.WriteLine($"Invalid token: {ex.Message}");
-                return false;
-            }
+           {
+               Console.WriteLine("no token");
+               return false;
+           }
+           try
+           { 
+               Console.WriteLine($"token: {token}");
+               ClaimsPrincipal principal = _jwtService.ValidateToken(token);
+               return true;
+           } catch( Exception ex)
+           { 
+               Console.WriteLine($"Invalid token: {ex.Message}");
+               return false;
+           }
         
         }
 
@@ -47,7 +47,6 @@ namespace GatewayService.Controllers
             
             using (var client = _httpClientFactory.CreateClient())
             {
-                // Set the base address of the API you want to call
                 client.BaseAddress = new System.Uri("http://localhost:5097/");
                 HttpResponseMessage response = await client.PostAsJsonAsync("api/History/add", historyEntry);
 

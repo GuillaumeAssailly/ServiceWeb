@@ -9,7 +9,7 @@
 <style>
     * {
         list-style-type: none;
-        padding: 0; 
+        padding: 0;
     }
 </style>
 
@@ -19,53 +19,48 @@
         <div class="col-md-8">
             <AuthorizeView Roles="Admin">
                 <Authorized>
-                    
-                        @if (SettingsService.Users != null && SettingsService.Users.Any())
-                        {
-                            <h3>User List</h3>
-                            <ul class="list-group">
-                                @foreach (var user in SettingsService.Users)
-                                {
-                                    <li class="list-group-item">
-                                        Id: @user.Id, Name: @user.Name, eMail: @user.Email
-                                        <button class="btn btn-danger btn-sm float-end" @onclick="() => deleteUser(user.Id)">Delete</button>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted">No users found.</p>
-                        }
-                        <br/>
-
-
-                    
-                        @if (SettingsService.AllHistory != null)
-                        {
-                            <h3>History of all games : </h3>
-                            <ul class="list-group">
-                                @foreach (var entry in SettingsService.AllHistory)
-                                {
-                                    <li class="list-group-item">
-                                        Id: @entry.Id, UserId: @entry.UserId
-                                        <ul>
-                                            @foreach (var element in entry.Path)
-                                            {
-                                                <li>@element</li>
-                                            }
-                                        </ul>
-                                        Temps: @entry.Timestamp
-                                        <button class="btn btn-danger btn-sm float-end" @onclick="() => deleteEntry(entry.Id)">Delete</button>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted">No game could be found.</p>
-                        }
-                   
+                    @if (SettingsService.Users != null && SettingsService.Users.Any())
+                    {
+                        <h3>User List</h3>
+                        <ul class="list-group">
+                            @foreach (var user in SettingsService.Users)
+                            {
+                                <li class="list-group-item">
+                                    Id: @user.Id, Name: @user.Name, eMail: @user.Email
+                                    <button class="btn btn-danger btn-sm float-end" @onclick="() => deleteUser(user.Id)">Delete</button>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No users found.</p>
+                    }
+                    <br />
+                    @if (SettingsService.AllHistory != null)
+                    {
+                        <h3>History of all games : </h3>
+                        <ul class="list-group">
+                            @foreach (var entry in SettingsService.AllHistory)
+                            {
+                                <li class="list-group-item">
+                                    Id: @entry.Id, UserId: @entry.UserId
+                                    <ul>
+                                        @foreach (var element in entry.Path)
+                                        {
+                                            <li>@element</li>
+                                        }
+                                    </ul>
+                                    Temps: @entry.Timestamp
+                                    <button class="btn btn-danger btn-sm float-end" @onclick="() => deleteEntry(entry.Id)">Delete</button>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No game could be found.</p>
+                    }
                 </Authorized>
                 <NotAuthorized>
                     <p class="text-danger">You need some privileges to view this.</p>

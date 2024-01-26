@@ -32,22 +32,16 @@ namespace Front.Services
             };
 
             var response = await _httpClient.PostAsJsonAsync("/api/User/login",user).ConfigureAwait(false) ;
-            //var response = await _httpClient.PostAsJsonAsync("/api/User/login",user) ;
-
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 
 
                 var result = await response.Content.ReadFromJsonAsync<JWTAndUser>();
-                //var jwtToken = result.Token;
-                //Console.WriteLine($"jwt token into localStorage [{jwtToken}");
-                //await _localStorage.SetItemAsStringAsync("jwt", jwtToken);
-                //var jwtQuoted = await _localStorage.GetItemAsStringAsync("jwt");
-                //Console.WriteLine($"localstorage LOGIN service: {jwtQuoted}");
+              
                 return result;
             }
-             return null;
+            return null;
             
         }
 

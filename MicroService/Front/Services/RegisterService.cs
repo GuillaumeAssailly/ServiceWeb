@@ -38,12 +38,6 @@ namespace Front.Services
             } else if (response.StatusCode == HttpStatusCode.Conflict)
             {
                 var errorMessage = await response.Content.ReadAsStringAsync();
-
-
-
-
-
-
                 if (errorMessage.Contains("Email"))
                 {
                     Console.WriteLine("Email already exists");

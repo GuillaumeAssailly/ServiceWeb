@@ -52,9 +52,7 @@ namespace Front.Services
         public async Task SearchStart()
         {
             string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
-            //string pageTitle = "Wikipedia";
-            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
-
+          
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
@@ -85,9 +83,7 @@ namespace Front.Services
         public async Task SearchEnd()
         {
             string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
-            //string pageTitle = "Volunteering";  // United_States
-            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
-
+           
             try
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
@@ -167,7 +163,6 @@ namespace Front.Services
                 }
             }
 
-            // Get the updated HTML
             string updatedHtml = htmlDocument.DocumentNode.OuterHtml;
 
             return updatedHtml;
@@ -218,7 +213,6 @@ namespace Front.Services
             {
                 foreach (var imgNode in imgNodes)
                 {
-                    // Add or update the style attribute to include pointer-events: none
                     var styleAttribute = imgNode.GetAttributeValue("style", "");
                     styleAttribute += "; pointer-events: none;";
                     imgNode.SetAttributeValue("style", styleAttribute.TrimStart(';').Trim());
@@ -270,8 +264,6 @@ namespace Front.Services
                     StopGame();
                 }
 
-
-                //ApiRes = Regex.Replace(ApiRes, "<img[^>]*?>", "");
                 htmlContent = htmlContent.Replace("\\\"", "'");
                 htmlContent = htmlContent.Replace("'\"", "\"");
                 htmlContent = RemoveLinksWithoutWiki(htmlContent);
@@ -294,20 +286,13 @@ namespace Front.Services
                 htmlContent = RemoveDivsByClass(htmlContent, "navbox authority-control");
 
 
-
-
-
                 htmlContent = Regex.Replace(htmlContent, "External Links", "");
                 htmlContent = htmlContent.Replace("\\t", "");
                 htmlContent = RemoveAfterExternalLinks(htmlContent);
-                 
                 
-                // Use MarkupString to display raw HTML content
-
             }
             catch (Exception ex)
             {
-                // Handle exceptions (e.g., display an error message)
                 Console.WriteLine($"Error: {ex.Message}");
             }
             return htmlContent;

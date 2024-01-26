@@ -24,7 +24,6 @@ namespace GatewayService.Controllers
         }
 
         // api/User/login
-        //public async Task<ActionResult<UserDTO>> Login(UserLogin model)
         [HttpPost("login")]
         public async Task<ActionResult<JWTAndUser>> Login(UserLogin model)
         {
@@ -54,9 +53,7 @@ namespace GatewayService.Controllers
         }
 
         // api/User/register
-        /*
-        public async Task<ActionResult<UserDTO>> Register(UserCreateModel model)
-        */
+ 
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserCreateModel model)
