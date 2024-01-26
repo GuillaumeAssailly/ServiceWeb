@@ -1,25 +1,88 @@
-﻿@page "/counter"
+﻿@page "/wiki/{id}"
 
-<AuthorizeView Roles="User">
-    <Authorized>
-        <PageTitle>Counter</PageTitle>
+@using System.Text.RegularExpressions
+@using System.Net
+@using System.Net.Http
+@using System.Security.Policy
+@using System.Text.Json
+@using System.Xml
+@using HtmlAgilityPack
+@using Microsoft.AspNetCore.Html
+@using Newtonsoft.Json
+@using JsonSerializer = Newtonsoft.Json.JsonSerializer
+@inject HttpClient _HttpClient
+@inject NavigationManager NavigationManager
+@inject WikispeediaService wikiService
 
-        <h1>Counter</h1>
+<style>
+    #contentColumn {
+        margin-left: 50px;
+    }
 
-        <p role="status">Current count: @currentCount</p>
+    #stickyColumn {
+        position: fixed;
+        top:0;
+        right: 0;
+        padding-top: 60px;
+        overflow-y: auto;
+        height: 100%;
+        width: 300px; 
+    }
+</style>
 
-        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-    </Authorized>
-    <NotAuthorized>
-        Not Logged in
-    </NotAuthorized>
-</AuthorizeView>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-9" id="contentColumn">
+            @if (!string.IsNullOrEmpty(htmlContent))
+            {
+                <div>
+                    <h1>@PageTitle</h1>
+                    <p>@rawHtml</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="stickyColumn">
+    <div>
+        <h3>History : </h3>
+        <ul>
+            @foreach (var item in wikiService.game.path)
+            {
+                <li>
+                    @item
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+
+
 
 @code {
-    private int currentCount = 0;
+    [Parameter] public string Id { get; set; }
+    private string htmlContent = "";
+    private MarkupString rawHtml;
+    private string PageTitle;
 
-    private void IncrementCount()
+    protected override async Task OnInitializedAsync()
     {
-        currentCount++;
+        htmlContent =  await wikiService.FetchWikiArticle($"https://en.wikipedia.org/w/api.php?action=parse&format=json&page={Id}&prop=text&formatversion=2");
+        PageTitle = wikiService.game.path.Last();
+        rawHtml = new MarkupString(htmlContent.Replace("\\n", ""));
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        string htmlContent =  await wikiService.FetchWikiArticle($"https://en.wikipedia.org/w/api.php?action=parse&format=json&page={Id}&prop=text&formatversion=2");
+        PageTitle = wikiService.game.path.Last();
+        rawHtml = new MarkupString(htmlContent.Replace("\\n", ""));
+    }
+ 
+
+    
+    
+
 }

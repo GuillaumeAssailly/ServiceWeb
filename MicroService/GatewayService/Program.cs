@@ -3,8 +3,14 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using GatewayService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings["Secret"];
+var issuer = jwtSettings["Issuer"];
+var audience = jwtSettings["Audience"];
 
 // Add services to the container.
 
@@ -36,6 +42,8 @@ builder.Services.AddSwaggerGen(option => {
         }
     });
 });
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -49,12 +57,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidAudience = "localhost:5000",
-            ValidIssuer = "TodoProject",
+            ValidIssuer = "Issuer",
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("YourSecretKeyLongLongLongLongEnough"))
+                Encoding.UTF8.GetBytes("3f8aba3c3cfaa6ac99a153834438bc43e595e62c59c4385b4c1f9e31ed495eaa"))
         };
     });
 builder.Services.AddHttpClient();
+
+builder.Services.Configure<TokenValidationParameters>(options =>
+{
+    options.ValidateIssuerSigningKey = true;
+    if (secretKey != null) options.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+    options.ValidateIssuer = true;
+    options.ValidateAudience = true;
+    options.ValidateLifetime = true;
+    options.ValidIssuer = issuer;
+    options.ValidAudience = audience;
+});
+builder.Services.AddSingleton<JwtService>();
+
 
 var app = builder.Build();
 

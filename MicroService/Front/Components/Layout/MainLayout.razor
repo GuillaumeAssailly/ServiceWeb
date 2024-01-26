@@ -1,25 +1,50 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Timers
+@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider authStateProvider
-
+@inject WikispeediaService wikiService
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
-
+    
     <main>
-        <div class="top-row px-4">
-            <AuthorizeView>
-                <Authorized>
-                    <p>Hello, @context.User.Identity.Name !</p>
-                    <a @onclick="Logout">Logout</a>
-                </Authorized>
-                <NotAuthorized>
-                    <p>You're not connected.</p>
-                </NotAuthorized>
-            </AuthorizeView>
-            
+        <div class="top-row px-4 d-flex justify-content-between align-items-center">
+           @if (NavigationManager.Uri.Contains("/wiki/"))
+           {
+               <div class="top-row px-4 d-flex justify-content-between align-items-center" >
+                   <h3 class="flex-grow-1" style="margin-right:20px">From </h3>
+                   <h3 class="flex-grow-1" title=@startextract> @start</h3>
+                   <h3 class="flex-grow-1" style="margin-right:20px; margin-left:20px"> to </h3>
+                   <h3 class="flex-grow-1" title="@endextract" >@end</h3>
+                
+               </div>
+               @if (showEndButton)
+               {
+                   <button  class="btn btn-primary" @onclick="EndGameClick"> End Game !</button>
+               }
+               <h3>@timing</h3>
+           }
+           else
+           {
+               <h3 class="flex-grow-1">Welcome to Wikispeedia !</h3>
+
+               <AuthorizeView>
+                   <Authorized>
+                       <p>Hello, @context.User.Identity.Name !</p>
+                       <a @onclick="Logout">Logout</a>
+                   </Authorized>
+                   <NotAuthorized>
+                       <p>You're not connected.</p>
+                   </NotAuthorized>
+               </AuthorizeView>
+           }
+         
+
         </div>
+                
+       
+
 
         <article class="content px-4">
             @Body
@@ -34,6 +59,54 @@
 </div>
 
 @code {
+
+    private string? start;
+    private string? end;
+    private string? startextract;
+    private string? endextract;
+    private TimeSpan? timing;
+    private bool showEndButton = false;
+
+    protected override void OnInitialized()
+    {
+        showEndButton = false;
+        wikiService.OnGameOver += EndGame;
+    }
+
+    private void UpdateTime(object? sender, ElapsedEventArgs e)
+    {
+        timing = wikiService.game?.timeElapsed;
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private void EndGame(object sender, EventArgs e)
+    {
+        
+       showEndButton = true;
+        InvokeAsync(StateHasChanged);
+
+    }
+    private void EndGameClick()
+    {
+        
+        NavigationManager.NavigateTo("/wiki-speed-run");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        showEndButton = false;
+        start = wikiService.game?.start;
+        end = wikiService.game?.end;
+        startextract = wikiService.game?.startextract;
+        endextract = wikiService.game?.endextract;
+        if (wikiService.timer != null)
+        {
+            wikiService.timer.Elapsed -= UpdateTime;
+            wikiService.timer.Elapsed += UpdateTime;
+        }
+    }
+
 
     private async void Logout()
     {

@@ -4,35 +4,42 @@
 @inject LoginService loginService
 @inject AuthenticationStateProvider authStateProvider
 
-
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <p style="color: red;">@errorMessage</p>
-}
-
-    <InputText @bind-Value="loginModel.Username" placeholder ="Nom d'utilisateur" />
-    <InputText @bind-Value="loginModel.Password" type="password" placeholder="Mot de passe" @onkeyup="HandleKeyUp" />
-    <button @onclick="HandleLogin">Login</button>
-
-    
-
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h3 class="mb-3">Login</h3>
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                <div class="mb-3">
+                    <label for="Username" class="form-label">Username</label>
+                    <InputText @bind-Value="loginModel.Username" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Password</label>
+                    <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 @code {
     private LoginModel loginModel = new LoginModel();
-    private string errorMessage = "";
+
 
     private async void HandleLogin()
     {
+        
         var user = loginService.AuthenticateUser(loginModel.Username, loginModel.Password).Result;
         if (user != null)
         {
             var userClaim = await ((CustomAuthenticationStateProvider)authStateProvider).MarkUserAsAuthenticated(user);
 
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/", forceLoad:true);
         }
         else
         {
-            errorMessage = "Échec de l'authentification. Vérifiez votre nom d'utilisateur et votre mot de passe.";
+            // Handle failed authentication
         }
     }
 
@@ -40,13 +47,5 @@
     {
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
-    }
-
-    private async Task HandleKeyUp(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            HandleLogin();
-        }
     }
 }

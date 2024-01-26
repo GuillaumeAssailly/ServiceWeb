@@ -1,0 +1,72 @@
+﻿@inject HttpClient _HttpClient
+@inject WikispeediaService wikiSpeedRunService
+@inject NavigationManager NavigationManager
+
+@page "/wiki-speed-run"
+@using Newtonsoft.Json
+
+<h1 >Wikispeedia</h1>
+<button @onclick="SearchStart" class="btn btn-primary">Select another random start</button>
+<button @onclick="SearchEnd" class="btn btn-primary">Select another random end</button>
+
+    <hr />
+<div>
+    <h3  > @start</h3>
+    <i>@startextract</i>
+    <div class="d-flex align-items-center">
+    </div>
+    <br/>
+    <hr/>
+</div>
+<div>
+    <h3> @end</h3>
+    <i>@endextract</i>
+    <div class="d-flex align-items-center">
+    </div>
+    <br/>
+    <hr />
+</div>
+
+<button @onclick="StartGame" class="btn btn-primary">Start the Game !</button>
+
+
+@code {
+    private string start;
+    private string startextract;
+    private string destination;
+    private string endextract;
+    private string end;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SearchStart();
+        await SearchEnd();
+    }
+
+    private async Task StartGame()
+    {
+       
+        wikiSpeedRunService.StartGame();
+
+        NavigationManager.NavigateTo($"/wiki/{start}");
+
+    }
+
+    private async Task SearchStart()
+    {
+        await wikiSpeedRunService.SearchStart();
+        start = wikiSpeedRunService.game.start;
+        startextract = wikiSpeedRunService.game.startextract;
+
+    }
+
+    private async Task SearchEnd()
+    {
+        await wikiSpeedRunService.SearchEnd();
+        end = wikiSpeedRunService.game.end;
+        endextract = wikiSpeedRunService.game.endextract;
+    }
+    
+    
+    
+}
