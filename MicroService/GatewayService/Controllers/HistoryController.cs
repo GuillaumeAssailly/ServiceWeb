@@ -1,10 +1,6 @@
 ﻿using GatewayService.Entities;
 using GatewayService.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
 using System.Security.Claims;
 
 namespace GatewayService.Controllers

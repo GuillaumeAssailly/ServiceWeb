@@ -1,14 +1,5 @@
 ﻿using Front.Entities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using NuGet.Protocol;
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
-using System.Text;
 
 
 namespace Front.Services

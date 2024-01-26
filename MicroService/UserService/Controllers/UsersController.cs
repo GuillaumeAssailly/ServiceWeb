@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UserService.Data;
@@ -98,7 +93,7 @@ namespace UserService.Controllers
         {
             // Check if the email already exists
             var existingMail = await _context.User.SingleOrDefaultAsync(u => u.Email == userPayload.Email);
-            var existingUser = await _context.User.SingleOrDefaultAsync(u => u.Email == userPayload.Name);
+            var existingUser = await _context.User.SingleOrDefaultAsync(u => u.Name == userPayload.Name);
             if (existingUser != null)
             {
                 return Conflict("Utilisateur deja existant");

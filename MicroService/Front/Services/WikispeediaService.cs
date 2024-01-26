@@ -1,11 +1,5 @@
-﻿
-
-using HtmlAgilityPack;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Html;
+﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;

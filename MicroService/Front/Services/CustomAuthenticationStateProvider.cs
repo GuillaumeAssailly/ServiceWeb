@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using NuGet.Protocol;
 using System.Security.Claims;
-using System.Security.Principal;
 
 namespace Front.Services
 {

@@ -1,10 +1,5 @@
 ﻿using Front.Entities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Security.Claims;
 
 
 namespace Front.Services
