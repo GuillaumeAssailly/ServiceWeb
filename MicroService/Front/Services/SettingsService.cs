@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Newtonsoft.Json.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 
@@ -104,10 +105,12 @@ namespace Front.Services
 
                     if (userId != null)
                     {
-                        using (var httpClientHistory = new HttpClient())
+                        using (var httpClient = new HttpClient())
                         {
-                            httpClientHistory.BaseAddress = new Uri("http://127.0.0.1:5097/");
-                            History = await httpClientHistory.GetFromJsonAsync<List<Entry>>($"api/History/{userId}");
+                            var jwtToken = await _localStorage.GetAsync<string>("jwt");
+                            httpClient.BaseAddress = new Uri("http://127.0.0.1:5097/");
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken.Value);
+                            History = await httpClient.GetFromJsonAsync<List<Entry>>($"api/History/{userId}");
                             
                         }
                     }
@@ -124,10 +127,12 @@ namespace Front.Services
         {
             try
             {
-                using (var httpClientHistory = new HttpClient())
+                using (var httpClient = new HttpClient())
                 {
-                    httpClientHistory.BaseAddress = new Uri("http://127.0.0.1:5097/");
-                    AllHistory = await httpClientHistory.GetFromJsonAsync<List<Entry>>($"api/History/all");
+                    var jwtToken = await _localStorage.GetAsync<string>("jwt");
+                    httpClient.BaseAddress = new Uri("http://127.0.0.1:5097/");
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken.Value);
+                    AllHistory = await httpClient.GetFromJsonAsync<List<Entry>>($"api/History/all");
                 }
             }
             catch (Exception ex)
