@@ -1,9 +1,56 @@
 ﻿@page "/"
 
+
+@inject SettingsService SettingsService
 <PageTitle>Home</PageTitle>
 
 
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<AuthorizeView Roles="User">
+<Authorized>
+    @if (SettingsService.History != null)
+    {
+        <h1>Your Previous Games : </h1>
+        <ul>
+            @foreach (var entry in SettingsService.History)
+            {
+           
+                <hr>
+                <h2>From @entry.Start to @entry.End</h2>
+                    <p>Time : @entry.Timestamp </p>
+                    <ul>
+                        @foreach(var element in entry.Path)
+                        {
+                            <li>@element </li>
+                        }
+                    </ul>
+                    
+                
+          
+        
+            
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No previous games</p>
+    }
+
+</Authorized>
+<NotAuthorized>
+    <p>You're not connected.</p>
+</NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        await SettingsService.getHistory();
+        InvokeAsync(StateHasChanged);
+    }
+
+
+}

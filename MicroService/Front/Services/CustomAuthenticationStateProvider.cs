@@ -41,11 +41,13 @@ namespace Front.Services
         public async Task<ClaimsPrincipal> Logout()
         {
             await _sessionStorage.DeleteAsync("User");
+            await _sessionStorage.DeleteAsync("jwt");
             _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
 
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
             return _currentUser;
         }
+
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
@@ -65,6 +67,8 @@ namespace Front.Services
             }
             return await Task.FromResult(new AuthenticationState(_currentUser));
         }
+
+
 
 
     }

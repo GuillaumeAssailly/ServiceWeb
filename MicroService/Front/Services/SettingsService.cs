@@ -110,6 +110,7 @@ namespace Front.Services
                         {
                             httpClientHistory.BaseAddress = new Uri("http://127.0.0.1:5097/");
                             History = await httpClientHistory.GetFromJsonAsync<List<Entry>>($"api/History/{userId}");
+                            
                         }
                     }
                 }

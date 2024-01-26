@@ -51,9 +51,9 @@ namespace Front.Services
 
         public async Task SearchStart()
         {
-            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
-            string pageTitle = "Wikipedia";
-            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            //string pageTitle = "Wikipedia";
+            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
 
             try
             {
@@ -84,9 +84,9 @@ namespace Front.Services
 
         public async Task SearchEnd()
         {
-            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
-            string pageTitle = "Volunteering";  // United_States
-            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
+            //string pageTitle = "Volunteering";  // United_States
+            //string apiUrl = $"https://en.wikipedia.org/w/api.php?action=query&titles={Uri.EscapeDataString(pageTitle)}&exlimit=1&explaintext=1&exsentences=5&formatversion=2&prop=extracts&format=json";
 
             try
             {
@@ -344,6 +344,8 @@ namespace Front.Services
             game.timeElapsed = game.timeElapsed.Add(TimeSpan.FromSeconds(1));
         }
 
+
+       
         public async Task sendGameToDB()
         {
             try

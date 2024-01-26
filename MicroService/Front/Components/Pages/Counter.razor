@@ -26,7 +26,7 @@
         padding-top: 60px;
         overflow-y: auto;
         height: 100%;
-        width: 300px; /* Set a fixed width for the fixed column */
+        width: 300px; 
     }
 </style>
 
@@ -80,52 +80,7 @@
         PageTitle = wikiService.game.path.Last();
         rawHtml = new MarkupString(htmlContent.Replace("\\n", ""));
     }
-    /*
-    private async Task RandomPage()
-    {
-        await getRandomId();
-    }
-
-    private async Task getRandomId()
-    {
-        string apiUrl = "https://en.wikipedia.org/w/api.php?action=query&format=json&list=random&rnnamespace=0";
-
-        try
-        {
-            HttpResponseMessage response = await _HttpClient.GetAsync(apiUrl);
-            response.EnsureSuccessStatusCode();
-
-            string apiRes = await response.Content.ReadAsStringAsync();
-
-            string pageId = ParsePageId(apiRes);
-
-            response = await _HttpClient.GetAsync($"https://en.wikipedia.org/w/api.php?action=parse&format=json&pageid={pageId}&prop=text&formatversion=2");
-            response.EnsureSuccessStatusCode();
-            string ApiRes = await response.Content.ReadAsStringAsync();
-
-            var parseResult = JsonConvert.DeserializeObject<ParseResult>(ApiRes);
-            string pageTitle = parseResult.Parse.Title;
-            NavigationManager.NavigateTo($"/wiki/{pageTitle}");
-
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
-
-
-    }
-
-    static string ParsePageId(string json)
-    {
-        int startIndex = json.IndexOf("\"id\":") + 5;
-        int endIndex = json.IndexOf(",", startIndex);
-        return json.Substring(startIndex, endIndex - startIndex);
-    }
-     */
-
-
+ 
 
     
     
